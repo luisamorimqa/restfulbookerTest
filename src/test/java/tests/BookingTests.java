@@ -21,4 +21,9 @@ public class BookingTests {
     public void testPostNewBooking() {
         bookingEndpoint.postNewBooking();
     }
+
+    @Test
+    public void testGetBookingById() {
+        bookingEndpoint.getABookingById();
+    }
 }
