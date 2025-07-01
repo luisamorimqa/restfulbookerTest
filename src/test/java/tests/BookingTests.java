@@ -5,15 +5,15 @@ import org.junit.jupiter.api.Test;
 
 public class BookingTests {
 
-    BookingEndpoint bookingEndpoit = new BookingEndpoint();
+    BookingEndpoint bookingEndpoint = new BookingEndpoint();
 
     @Test
     public void testGetAllBookings() {
-        bookingEndpoit.getAllBookings();
+        bookingEndpoint.getAllBookings();
     }
 
     @Test
     public void testGetAnInexistentBooking() {
-        bookingEndpoit.getAnInexistentBooking();
+        bookingEndpoint.getAnInexistentBooking();
     }
 }
