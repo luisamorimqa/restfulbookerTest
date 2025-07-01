@@ -1,5 +1,7 @@
 package endpoint;
 
+import dataTest.BookingDataTest;
+import dto.BookingDTO;
 import io.restassured.RestAssured;
 
 import static io.restassured.RestAssured.given;
@@ -39,8 +41,23 @@ public class BookingEndpoint {
                 .statusCode(404)
                 .body(equalTo("Not Found"))
         ;
-
     }
 
+    public void postNewBooking() {
 
+        RestAssured.baseURI = BASE_URL;
+        BookingDTO bookingDTO = BookingDataTest.setValue();
+
+        given()
+                .header("Content-type", "application/json")
+                .body(bookingDTO)
+                .log().all()
+                .post("/booking")
+                .then()
+                .log().all()
+                .body("booking.firstname", equalTo(bookingDTO.getFirstname()))
+                .body("booking.lastname", equalTo(bookingDTO.getLastname()))
+                .statusCode(200)
+        ;
+    }
 }

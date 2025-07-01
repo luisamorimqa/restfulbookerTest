@@ -16,4 +16,9 @@ public class BookingTests {
     public void testGetAnInexistentBooking() {
         bookingEndpoint.getAnInexistentBooking();
     }
+
+    @Test
+    public void testPostNewBooking() {
+        bookingEndpoint.postNewBooking();
+    }
 }
