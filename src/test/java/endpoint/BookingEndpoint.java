@@ -8,6 +8,7 @@ import utils.SharedData;
 import static io.restassured.RestAssured.given;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.notNullValue;
+import static utils.Token.getToken;
 
 public class BookingEndpoint {
 
@@ -25,6 +26,7 @@ public class BookingEndpoint {
                 .body(bookingDTO)
                 .post("/booking")
                 .then()
+                .log().all()
                 .extract().path("bookingid")
                 .toString();
 
@@ -83,8 +85,7 @@ public class BookingEndpoint {
                 .body("depositpaid", equalTo(bookingDTO.getDepositPaid()))
                 .body("bookingdates.checkin", equalTo(bookingDTO.getBookingDates().getCheckin()))
                 .body("bookingdates.checkout", equalTo(bookingDTO.getBookingDates().getCheckout()))
-                .body("additionalneeds", equalTo(bookingDTO.getAdditionalneeds()))
-                ;
+                .body("additionalneeds", equalTo(bookingDTO.getAdditionalneeds()));
     }
 
     public void getAnInexistentBooking() {
@@ -95,6 +96,31 @@ public class BookingEndpoint {
         given()
                 .header("Content-type", "application/json")
                 .header("Accept", "*/*")
+                .when()
+                .get("/booking/" + bookingId)
+                .then()
+                .log().all()
+                .statusCode(404)
+                .body(equalTo("Not Found"));
+    }
+
+    public void deleteBooking() {
+
+        RestAssured.baseURI = BASE_URL;
+        String bookingId = newBooking();
+
+        given()
+                .header("Content-type", "application/json")
+                .header("Accept", "*/*")
+                .header("Cookie", "token=" + getToken())
+                .log().all()
+                .when()
+                .delete("/booking/" + bookingId)
+                .then()
+                .statusCode(201)
+                .body(equalTo("Created"));
+
+        given()
                 .when()
                 .get("/booking/" + bookingId)
                 .then()

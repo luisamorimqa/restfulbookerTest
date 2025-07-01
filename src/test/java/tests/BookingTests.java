@@ -26,4 +26,9 @@ public class BookingTests {
     public void testGetBookingById() {
         bookingEndpoint.getABookingById();
     }
+
+    @Test
+    public void testDeleteBooking() {
+        bookingEndpoint.deleteBooking();
+    }
 }
