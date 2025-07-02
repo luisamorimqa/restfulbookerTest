@@ -7,12 +7,14 @@ import utils.SharedData;
 
 import static io.restassured.RestAssured.given;
 import static org.hamcrest.Matchers.equalTo;
+
 import static org.hamcrest.Matchers.notNullValue;
 import static utils.Token.getToken;
 
 public class BookingEndpoint {
 
     private final String BASE_URL = "https://restful-booker.herokuapp.com";
+
 
     public String newBooking() {
 
@@ -42,13 +44,13 @@ public class BookingEndpoint {
                 .header("Content-type", "application/json")
                 .body(bookingDTO)
                 .log().all()
-                .when()
                 .post("/booking")
                 .then()
                 .log().all()
                 .body("booking.firstname", equalTo(bookingDTO.getFirstname()))
                 .body("booking.lastname", equalTo(bookingDTO.getLastname()))
-                .statusCode(200);
+                .statusCode(200)
+        ;
     }
 
     public void getAllBookings() {
@@ -101,7 +103,8 @@ public class BookingEndpoint {
                 .then()
                 .log().all()
                 .statusCode(404)
-                .body(equalTo("Not Found"));
+                .body(equalTo("Not Found"))
+        ;
     }
 
     public void deleteBooking() {
