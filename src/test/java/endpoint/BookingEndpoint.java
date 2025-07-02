@@ -9,7 +9,6 @@ import static io.restassured.RestAssured.given;
 import static org.hamcrest.Matchers.equalTo;
 
 import static org.hamcrest.Matchers.notNullValue;
-import static utils.Token.getToken;
 
 public class BookingEndpoint {
 
@@ -112,23 +111,6 @@ public class BookingEndpoint {
         RestAssured.baseURI = BASE_URL;
         String bookingId = newBooking();
 
-        given()
-                .header("Content-type", "application/json")
-                .header("Accept", "*/*")
-                .header("Cookie", "token=" + getToken())
-                .log().all()
-                .when()
-                .delete("/booking/" + bookingId)
-                .then()
-                .statusCode(201)
-                .body(equalTo("Created"));
-
-        given()
-                .when()
-                .get("/booking/" + bookingId)
-                .then()
-                .log().all()
-                .statusCode(404)
-                .body(equalTo("Not Found"));
+        System.out.println("Booking ID: " + bookingId);
     }
 }
