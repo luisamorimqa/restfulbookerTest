@@ -9,29 +9,28 @@ import static io.restassured.RestAssured.given;
 import static org.hamcrest.Matchers.equalTo;
 
 import static org.hamcrest.Matchers.notNullValue;
+import static utils.Token.getToken;
 
 public class BookingEndpoint {
 
     private final String BASE_URL = "https://restful-booker.herokuapp.com";
-
 
     public String newBooking() {
 
         RestAssured.baseURI = BASE_URL;
         BookingDTO bookingDTO = BookingDataTest.setValue();
 
-        String bookingId =
-        given()
-                .header("Content-type", "application/json")
-                .header("Accept", "*/*")
-                .body(bookingDTO)
-                .post("/booking")
-                .then()
-                .log().all()
-                .extract().path("bookingid")
-                .toString();
-
-        return bookingId;
+        return
+                given()
+                        .header("Content-type", "application/json")
+                        .body(bookingDTO)
+                        .when()
+                        .log().all()
+                        .post("/booking")
+                        .then()
+                        .log().all()
+                        .extract().path("bookingid")
+                        .toString();
     }
 
     public void postNewBooking() {
@@ -102,8 +101,58 @@ public class BookingEndpoint {
                 .then()
                 .log().all()
                 .statusCode(404)
-                .body(equalTo("Not Found"))
-        ;
+                .body(equalTo("Not Found"));
+    }
+
+    public void putBooking() {
+
+        RestAssured.baseURI = BASE_URL;
+        String bookingId = newBooking();
+        BookingDTO bookingDTO = BookingDataTest.setValue();
+        bookingDTO.setFirstname(bookingDTO.getFirstname() + " Alterado");
+        bookingDTO.setLastname(bookingDTO.getLastname() + " Alterado");
+
+        given()
+                .header("Content-Type", "application/json")
+                .header("Accept", "application/json")
+                .header("Cookie", "token=" + getToken())
+                .body(bookingDTO)
+                .when()
+                .put("/booking/" + bookingId)
+                .then()
+                .log().all()
+                .statusCode(200)
+                .body("firstname", equalTo(bookingDTO.getFirstname()))
+                .body("lastname", equalTo(bookingDTO.getLastname()))
+                .body("totalprice", equalTo(bookingDTO.getTotalprice()))
+                .body("depositpaid", equalTo(bookingDTO.getDepositPaid()))
+                .body("bookingdates.checkin", equalTo(bookingDTO.getBookingDates().getCheckin()))
+                .body("bookingdates.checkout", equalTo(bookingDTO.getBookingDates().getCheckout()))
+                .body("additionalneeds", equalTo(bookingDTO.getAdditionalneeds()));
+    }
+
+    public void patchBooking() {
+        RestAssured.baseURI = BASE_URL;
+        String bookingId = newBooking();
+        BookingDTO bookingDTO = BookingDataTest.setValue();
+        bookingDTO.setFirstname(bookingDTO.getFirstname() + " Alterado");
+        bookingDTO.setLastname(bookingDTO.getLastname() + " Alterado");
+
+        given()
+                .header("Content-Type", "application/json")
+                .header("Accept", "application/json")
+                .header("Cookie", "token=" + getToken())
+                .body(   "{" +
+                            "\"firstname\" : \"" + bookingDTO.getFirstname() + "\",\n" +
+                            "\"lastname\" : \"" + bookingDTO.getLastname() + "\"" +
+                         "}")
+                .when()
+                .patch("/booking/" + bookingId)
+                .then()
+                .log().all()
+                .statusCode(200)
+                .body("firstname", equalTo(bookingDTO.getFirstname()))
+                .body("lastname", equalTo(bookingDTO.getLastname()));
     }
 
     public void deleteBooking() {
@@ -111,6 +160,23 @@ public class BookingEndpoint {
         RestAssured.baseURI = BASE_URL;
         String bookingId = newBooking();
 
-        System.out.println("Booking ID: " + bookingId);
+        given()
+                .header("Content-Type", "application/json")
+                .header("Cookie", "token=" + getToken())
+                .when()
+                .delete("/booking/" + bookingId)
+                .then()
+                .log().all()
+                .statusCode(201)
+                .body(equalTo("Created"));
+
+        given()
+                .header("Content-type", "application/json")
+                .when()
+                .get("/booking/" + bookingId)
+                .then()
+                .log().all()
+                .statusCode(404)
+                .body(equalTo("Not Found"));
     }
 }

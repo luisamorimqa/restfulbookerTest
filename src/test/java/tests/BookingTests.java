@@ -28,6 +28,16 @@ public class BookingTests {
     }
 
     @Test
+    public void testPutBooking() {
+        bookingEndpoint.putBooking();
+    }
+
+    @Test
+    public void testPatchBooking() {
+        bookingEndpoint.patchBooking();
+    }
+
+    @Test
     public void testDeleteBooking() {
         bookingEndpoint.deleteBooking();
     }
